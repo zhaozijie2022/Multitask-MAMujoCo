@@ -1,0 +1,67 @@
+2_ant: # 2-Agent Ant
+  env_args:
+    scenario: "Ant-v2"
+    agent_conf: "2x4"
+    agent_obsk: 1
+
+2_ant_diag: # 2-Agent Ant Diag
+  env_args:
+    scenario: "Ant-v2"
+    agent_conf: "2x4d"
+    agent_obsk: 1
+
+4_ant:
+  env_args:
+    scenario: "Ant-v2"
+    agent_conf: "4x2"
+    agent_obsk: 1
+
+2_cheetah: # 2-Agent HalfCheetah
+  env_args:
+    scenario: "HalfCheetah-v2"
+    agent_conf: "2x3"
+    agent_obsk: 1
+
+6_cheetah: # 6-Agent HalfCheetah
+  env_args:
+    scenario: "HalfCheetah-v2"
+    agent_conf: "6x1"
+    agent_obsk: 1
+
+3_hopper: # 3-Agent Hopper
+  env_args:
+    scenario: "Hopper-v2"
+    agent_conf: "3x1"
+    agent_obsk: 1
+
+2_humanoid: # 2-Agent Humanoid
+  env_args:
+    scenario: "Humanoid-v2"
+    agent_conf: "9|8"
+    agent_obsk: 1
+
+2_humanoid_standup: # 2-Agent HumanoidStandup
+  env_args:
+    scenario: "HumanoidStandup-v2"
+    agent_conf: "9|8"
+    agent_obsk: 1
+
+2_reacher: # 2-Agent Reacher
+  env_args:
+    scenario: "Reacher-v2"
+    agent_conf: "2x1"
+    agent_obsk: 1
+
+2_swimmer: # 2-Agent Swimmer
+  env_args:
+    scenario: "Swimmer-v2"
+    agent_conf: "2x1"
+    agent_obsk: 1
+
+2_walker: # 2-Agent Walker
+  env_args:
+    scenario: "Walker2d-v2"
+    agent_conf: "2x3"
+    agent_obsk: 1
+
+
