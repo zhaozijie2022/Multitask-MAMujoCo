@@ -1,6 +1,7 @@
 import gym
 import numpy as np
 from gym.spaces import Box
+from gym.wrappers import TimeLimit
 
 from .multiagentenv import MultiAgentEnv
 from .obsk import get_joints_at_kdist, get_parts_and_edges, build_obs
@@ -29,8 +30,8 @@ class MujocoMulti(MultiAgentEnv):
 
     def __init__(self, batch_size=None, **kwargs):
         super().__init__(batch_size, **kwargs)
-        self.scenario = kwargs["env_args"]["scenario"]  # e.g. 'Ant-v2'
-        self.agent_conf = kwargs["env_args"]["agent_conf"]  # e.g. '2x3' # n_agents x motors_per_agent
+        self.scenario = kwargs["env_args"]["scenario"]  # e.g. Ant-v2
+        self.agent_conf = kwargs["env_args"]["agent_conf"]  # e.g. '2x3'
 
         self.agent_partitions, self.mujoco_edges, self.mujoco_globals = get_parts_and_edges(self.scenario,
                                                                                             self.agent_conf)
@@ -76,7 +77,18 @@ class MujocoMulti(MultiAgentEnv):
 
         self.env_version = kwargs["env_args"].get("env_version", 2)
         if self.env_version == 2:
-            self.wrapped_env = NormalizedActions(gym.make(self.scenario))
+            try:
+                self.wrapped_env = NormalizedActions(gym.make(self.scenario))
+            except gym.error.Error:  # env not in gym
+                if self.scenario in ["manyagent_ant"]:
+                    from .manyagent_ant import ManyAgentAntEnv as this_env
+                elif self.scenario in ["manyagent_swimmer"]:
+                    from .manyagent_swimmer import ManyAgentSwimmerEnv as this_env
+                elif self.scenario in ["coupled_half_cheetah"]:
+                    from .coupled_half_cheetah import CoupledHalfCheetah as this_env
+                else:
+                    raise NotImplementedError('Custom env not implemented!')
+                self.wrapped_env = NormalizedActions(TimeLimit(this_env(**kwargs["env_args"]), max_episode_steps=self.episode_limit))
         else:
             assert False, "not implemented!"
         self.timelimit_env = self.wrapped_env.env
@@ -87,20 +99,12 @@ class MujocoMulti(MultiAgentEnv):
 
         # COMPATIBILITY
         self.n = self.n_agents
-        self.observation_space = [Box(low=np.array([-10] * self.obs_size, dtype=np.float32),
-                                      high=np.array([10] * self.obs_size, dtype=np.float32),
-                                      dtype=np.float32) for _ in range(self.n_agents)]
+        self.observation_space = [Box(low=np.array([-10] * self.n_agents), high=np.array([10] * self.n_agents)) for _ in
+                                  range(self.n_agents)]
 
         acdims = [len(ap) for ap in self.agent_partitions]
-        self.action_space = tuple([Box(low=self.env.action_space.low[sum(acdims[:a]):sum(acdims[:a + 1])],
-                                       high=self.env.action_space.high[sum(acdims[:a]):sum(acdims[:a + 1])],
-                                       dtype=np.float32) for a in range(self.n_agents)])
-
-        self.share_observation_space = [Box(low=np.array([-10] * (self.get_state_size()), dtype=np.float32),
-                                            high=np.array([10] * (self.get_state_size()), dtype=np.float32),
-                                            dtype=np.float32) for _ in range(self.n_agents)]
-
-        self.steps = 0
+        self.action_space = tuple([Box(self.env.action_space.low[sum(acdims[:a]):sum(acdims[:a + 1])],
+                                       self.env.action_space.high[sum(acdims[:a]):sum(acdims[:a + 1])]) for a in range(self.n_agents)])
         pass
 
     def step(self, actions):
@@ -146,7 +150,6 @@ class MujocoMulti(MultiAgentEnv):
                              self.k_categories,
                              self.mujoco_globals,
                              self.global_categories,
-                             # vec_len=None, )
                              vec_len=getattr(self, "obs_size", None))
 
     def get_obs_size(self):
@@ -156,7 +159,7 @@ class MujocoMulti(MultiAgentEnv):
         else:
             return max([len(self.get_obs_agent(agent_id)) for agent_id in range(self.n_agents)])
 
-    def get_state(self):
+    def get_state(self, team=None):
         # TODO: May want global states for different teams (so cannot see what the other team is communicating e.g.)
         return self.env._get_obs()
 
@@ -193,8 +196,7 @@ class MujocoMulti(MultiAgentEnv):
         self.env.render(**kwargs)
 
     def close(self):
-        self.env.close()
-        # raise NotImplementedError
+        raise NotImplementedError
 
     def seed(self, args):
         pass

@@ -1,14 +1,10 @@
-"""adapted from https:github.com/cnfinn/maml_rl/rllab/envs/mujoco"""
 import numpy as np
-
 from multiagent_mujoco.mujoco_multi import MujocoMulti
-from multitasks.reward_norm import tolerance
+from utils import tolerance
 
 _RUN_SPEED = 10
 _RUN_BACKWARDS_SPEED = 8
-_RUN_ONE_FOOT_SPEED = 6
-# 向前跑的最快速度, 大于这个速度reward就保持1
-
+_RUN_ONE_FOOT_SPEED = 6  # 向前跑的最快速度, 大于这个速度reward就保持1
 _JUMP_SPEED = 0.5  # 跳起来的最快速度, 大于这个速度reward就给0
 _JUMP_HEIGHT = 1.2  # 跳起来的最高高度, 大于这个高度reward就保持1
 
@@ -23,32 +19,29 @@ class HalfCheetahMulti(MujocoMulti):
         self.jump_speed = kwargs.get("jump_speed", _JUMP_SPEED)
         self.jump_height = kwargs.get("jump_height", _JUMP_HEIGHT)
 
-        body_names = self.wrapped_env.env.model.body_names
+        body_names = self.wrapped_env.env.env.model.body_names
         self.body_idxes = {name: idx for idx, name in enumerate(body_names)}
-        self.dim_index = {'x': 0, 'y': 1, 'z': 2}
+        self.xyz_index = {'x': 0, 'y': 1, 'z': 2}
 
         self.tasks = ["run", "run_backwards", "jump", "run_front", "run_back"]
+        self.n_tasks = len(self.tasks)
         self._task_idx = 0
 
     def step(self, actions):
         reward, done, info = super().step(actions)
-        obs_n = self.get_obs()
-        share_obs = self.get_state()
-        share_obs_n = [share_obs[:] for _ in range(self.n_agents)]
         reward = self.get_reward(info)
-        reward_n = [np.array([reward]) for _ in range(self.n_agents)]
-        done_n = [done for _ in range(self.n_agents)]
-        info["bad_transition"] = False
-        info["task"] = self.task
-        info_n = [info for _ in range(self.n_agents)]
-        available_actions = None
-        return obs_n, share_obs_n, reward_n, done_n, info_n, available_actions
+        return reward, done, info
 
     def reset(self):
-        obs_n = super().reset()
-        share_obs_n = [np.concatenate(obs_n) for _ in range(self.n_agents)]
-        available_actions = None
-        return obs_n, share_obs_n, available_actions
+        return super().reset()
+        # obs_n = super().reset()
+        # share_obs = self.get_state()
+        # share_obs_n = [share_obs[:] for _ in range(self.n_agents)]
+        # available_actions = None
+        # return obs_n, share_obs_n, available_actions
+
+    def close(self):
+        self.wrapped_env.close()
 
     def _run_reward(self, info):
         speed = info["reward_run"]
@@ -112,7 +105,7 @@ class HalfCheetahMulti(MujocoMulti):
         return up_reward * (5 * speed_reward + 1) / 6
 
     def get_body_pos(self, name, xyz):
-        return self.wrapped_env.env.sim.data.body_xpos[self.body_idxes[name]][self.dim_index[xyz]]
+        return self.wrapped_env.env.env.sim.data.body_xpos[self.body_idxes[name]][self.xyz_index[xyz]]
 
     def get_reward(self, info):
         if self.task == "run":
@@ -129,6 +122,7 @@ class HalfCheetahMulti(MujocoMulti):
             raise NotImplementedError(f"task {self.task} is not implemented.")
 
     def reset_task(self, idx):
+        assert 0 <= idx < self.n_tasks
         self._task_idx = idx
         return self.task_idx
 
@@ -139,5 +133,3 @@ class HalfCheetahMulti(MujocoMulti):
     @property
     def task(self):
         return self.tasks[self._task_idx]
-
-

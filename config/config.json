@@ -1,0 +1,28 @@
+{
+  "n_tasks": null,
+  "n_agents": null,
+  "episode_limit": 1000,
+  "env_args_path": "config/all_env_args.yaml",
+  "envs":
+    {
+      "2_cheetah": [
+        "run",
+        "run_backwards",
+        "jump",
+        "run_front",
+        "run_back"
+      ],
+      "6_cheetah": [
+        "run",
+        "run_backwards",
+        "jump",
+        "run_front",
+        "run_back"
+      ],
+      "3_hopper": [
+        "hop",
+        "hop_backwards",
+        "stand"
+      ]
+    }
+}

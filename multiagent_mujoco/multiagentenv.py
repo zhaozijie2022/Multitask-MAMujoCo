@@ -5,7 +5,6 @@ import numpy as np
 def convert(dictionary):
     return namedtuple('GenericDict', dictionary.keys())(**dictionary)
 
-
 class MultiAgentEnv(object):
 
     def __init__(self, batch_size=None, **kwargs):
@@ -17,7 +16,7 @@ class MultiAgentEnv(object):
 
         if getattr(args, "seed", None) is not None:
             self.seed = args.seed
-            self.rs = np.random.RandomState(self.seed)  # initialise numpy random state
+            self.rs = np.random.RandomState(self.seed) # initialise numpy random state
 
     def step(self, actions):
         """ Returns reward, terminated, info """

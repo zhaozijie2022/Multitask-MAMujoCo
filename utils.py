@@ -1,4 +1,6 @@
+import importlib
 import warnings
+import yaml
 
 import numpy as np
 
@@ -117,3 +119,29 @@ def tolerance(x, bounds=(0.0, 0.0), margin=0.0, sigmoid='gaussian',
         value = np.where(in_bounds, 1.0, _sigmoids(d, value_at_margin, sigmoid))
 
     return float(value) if np.isscalar(x) else value
+
+
+def make_envs(cfg):
+    all_env_args = yaml.load(open(cfg["env_args_path"], 'r'), Loader=yaml.FullLoader)
+    envs = []
+    for domain, tasks in cfg["envs"].items():
+        env_file = importlib.import_module("custom_suites." + all_env_args[domain]["env_file"])
+        Env = getattr(env_file, all_env_args[domain]["env_class"])
+        env_args = all_env_args[domain]["env_args"]
+        env_args["episode_limit"] = cfg["episode_limit"]
+        env = Env(env_args=env_args)
+        envs.append(env)
+    return envs
+
+
+def get_action_shape_n(envs_info):
+    mt_action_shape_n = []
+    for env_info in envs_info:
+        mt_action_shape_n.append([])
+        for action_space in env_info["action_spaces"]:
+            mt_action_shape_n[-1].append(action_space.shape[0])
+    return mt_action_shape_n
+
+
+
+
