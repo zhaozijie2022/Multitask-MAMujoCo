@@ -4,7 +4,7 @@ from multiagent_mujoco.mujoco_multi import MujocoMulti
 from utils import tolerance
 
 
-class ReacherMulti(MujocoMulti):
+class SwimmerMulti(MujocoMulti):
     def __init__(self, env_args, **kwargs):
         super().__init__(env_args=env_args, **kwargs)
 
@@ -14,7 +14,7 @@ class ReacherMulti(MujocoMulti):
         self.radii = (self.wrapped_env.env.env.model.geom_size[self.geom_idxes["target"]][0]
                       + self.wrapped_env.env.env.model.geom_size[self.geom_idxes["fingertip"]][0])
 
-        self.tasks = ["reach"]
+        self.tasks = ["swim"]
         self.n_tasks = len(self.tasks)
         self._task_idx = 0
 

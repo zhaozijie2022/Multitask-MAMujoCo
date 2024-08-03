@@ -13,8 +13,8 @@ class HumanoidMulti(MujocoMulti):
         super().__init__(env_args=env_args, **kwargs)
 
         self.stand_height = kwargs.get("stand_height", _STAND_HEIGHT)
-        self.walk_speed = kwargs.get("hop_speed", _WALK_SPEED)
-        self.run_speed = kwargs.get("spin_speed", _RUN_SPEED)
+        self.walk_speed = kwargs.get("walk_speed", _WALK_SPEED)
+        self.run_speed = kwargs.get("run_speed", _RUN_SPEED)
 
         body_names = self.wrapped_env.env.env.model.body_names
         self.body_idxes = {name: idx for idx, name in enumerate(body_names)}
@@ -25,8 +25,7 @@ class HumanoidMulti(MujocoMulti):
 
     def step(self, actions):
         raw_reward, done, info = super().step(actions)
-        env_actions = np.concatenate(actions)
-        info["control"] = env_actions
+        info["control"] = np.concatenate(actions)
         reward = self.get_reward(info)
         return reward, done, info
 
@@ -37,7 +36,7 @@ class HumanoidMulti(MujocoMulti):
         self.wrapped_env.close()
 
     def _stand_reward(self, info):
-        standing = tolerance(self.get_head_height(),
+        standing = tolerance(self.get_torso_height(),
                              bounds=(self.stand_height, float('inf')),
                              margin=self.stand_height / 4)
         upright = tolerance(self.get_torso_upright(),
@@ -58,7 +57,7 @@ class HumanoidMulti(MujocoMulti):
         return small_control * stand_reward * dont_move
 
     def _walk_reward(self, info):
-        standing = tolerance(self.get_head_height(),
+        standing = tolerance(self.get_torso_height(),
                              bounds=(self.stand_height, float('inf')),
                              margin=self.stand_height / 4)
         upright = tolerance(self.get_torso_upright(),
@@ -83,7 +82,7 @@ class HumanoidMulti(MujocoMulti):
         return small_control * stand_reward * move
 
     def _run_reward(self, info):
-        standing = tolerance(self.get_head_height(),
+        standing = tolerance(self.get_torso_height(),
                              bounds=(self.stand_height, float('inf')),
                              margin=self.stand_height / 4)
         upright = tolerance(self.get_torso_upright(),
@@ -112,7 +111,7 @@ class HumanoidMulti(MujocoMulti):
         # xx, xy, xz, yx, yy, yz, zx, zy, zz
         return self.wrapped_env.env.env.sim.data.body_xmat[self.body_idxes["torso"]][8]
 
-    def get_head_height(self):
+    def get_torso_height(self):
         return self.wrapped_env.env.env.sim.data.body_xpos[self.body_idxes["torso"]][2]
 
     def get_center_of_mass_velocity(self):
