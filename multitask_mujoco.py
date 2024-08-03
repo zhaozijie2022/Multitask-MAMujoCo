@@ -8,7 +8,7 @@ class MultitaskMujoco:
     def __init__(self, cfg: DictConfig):
         self.cfg = cfg
         self.envs = make_envs(cfg)
-        cfg.n_tasks = sum([len(tasks) for tasks in cfg.envs.values()])
+        self.n_tasks = sum([len(tasks) for tasks in cfg.envs.values()])
         self.envs_info = [env.get_env_info() for env in self.envs]
 
         self.obs_size = max([env_info["obs_shape"] for env_info in self.envs_info])

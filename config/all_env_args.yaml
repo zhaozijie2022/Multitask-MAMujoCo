@@ -1,4 +1,6 @@
 2_ant: # 2-Agent Ant
+  env_file: ant
+  env_class: AntMulti
   env_args:
     scenario: "Ant-v2"
     agent_conf: "2x4"
@@ -6,6 +8,8 @@
     episode_limit: 1000
 
 2_ant_diag: # 2-Agent Ant Diag
+  env_file: ant
+  env_class: AntMulti
   env_args:
     scenario: "Ant-v2"
     agent_conf: "2x4d"
@@ -14,6 +18,8 @@
 
 
 4_ant:
+  env_file: ant
+  env_class: AntMulti
   env_args:
     scenario: "Ant-v2"
     agent_conf: "4x2"
@@ -48,6 +54,8 @@
     episode_limit: 1000
 
 2_humanoid: # 2-Agent Humanoid
+  env_file: humanoid
+  env_class: HumanoidMulti
   env_args:
     scenario: "Humanoid-v2"
     agent_conf: "9|8"
@@ -55,6 +63,8 @@
     episode_limit: 1000
 
 2_humanoid_standup: # 2-Agent HumanoidStandup
+  env_file: humanoid_standup
+  env_class: HumanoidStandupMulti
   env_args:
     scenario: "HumanoidStandup-v2"
     agent_conf: "9|8"

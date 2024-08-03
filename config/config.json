@@ -3,26 +3,45 @@
   "n_agents": null,
   "episode_limit": 1000,
   "env_args_path": "config/all_env_args.yaml",
-  "envs":
-    {
-      "2_cheetah": [
-        "run",
-        "run_backwards",
-        "jump",
-        "run_front",
-        "run_back"
-      ],
-      "6_cheetah": [
-        "run",
-        "run_backwards",
-        "jump",
-        "run_front",
-        "run_back"
-      ],
-      "3_hopper": [
-        "hop",
-        "hop_backwards",
-        "stand"
-      ]
-    }
+  "envs": {
+    "2_ant": [
+      "run",
+      "run_backwards"
+    ],
+    "2_ant_diag": [
+      "run",
+      "run_backwards"
+    ],
+    "4_ant": [
+      "run",
+      "run_backwards"
+    ],
+    "2_cheetah": [
+      "run",
+      "run_backwards",
+      "jump",
+      "run_front",
+      "run_back"
+    ],
+    "6_cheetah": [
+      "run",
+      "run_backwards",
+      "jump",
+      "run_front",
+      "run_back"
+    ],
+    "3_hopper": [
+      "hop",
+      "hop_backwards",
+      "stand"
+    ],
+    "2_humanoid": [
+      "stand",
+      "walk",
+      "run"
+    ],
+    "2_humanoid_standup": [
+      "standup"
+    ]
+  }
 }

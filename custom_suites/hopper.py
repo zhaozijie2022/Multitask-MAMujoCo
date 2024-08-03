@@ -26,6 +26,7 @@ class HopperMulti(MujocoMulti):
         info["reward_hop"] = raw_reward - 1.0 + 1e-3 * np.square(env_actions).sum()
         info["control"] = env_actions
         reward = self.get_reward(info)
+        return reward, done, info
 
     def reset(self):
         return super().reset()

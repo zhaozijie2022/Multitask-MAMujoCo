@@ -31,7 +31,7 @@ class AntMulti(MujocoMulti):
         self.wrapped_env.close()
 
     def _run_reward(self, info):
-        speed_reward = tolerance(info["forward_reward"],
+        speed_reward = tolerance(info["reward_forward"],
                                  bounds=(self.run_speed, float('inf')),
                                  margin=self.run_speed,
                                  value_at_margin=0,
@@ -44,7 +44,7 @@ class AntMulti(MujocoMulti):
 
 
     def _run_backwards_reward(self, info):
-        speed_reward = tolerance(-1.0 * info["forward_reward"],
+        speed_reward = tolerance(-1.0 * info["reward_forward"],
                                  bounds=(self.run_backwards_speed, float('inf')),
                                  margin=self.run_backwards_speed,
                                  value_at_margin=0,
