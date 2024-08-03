@@ -34,11 +34,6 @@ class HalfCheetahMulti(MujocoMulti):
 
     def reset(self):
         return super().reset()
-        # obs_n = super().reset()
-        # share_obs = self.get_state()
-        # share_obs_n = [share_obs[:] for _ in range(self.n_agents)]
-        # available_actions = None
-        # return obs_n, share_obs_n, available_actions
 
     def close(self):
         self.wrapped_env.close()
