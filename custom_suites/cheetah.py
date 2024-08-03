@@ -1,6 +1,5 @@
-import numpy as np
 from multiagent_mujoco.mujoco_multi import MujocoMulti
-from utils import tolerance
+from custom_suites.utils import tolerance
 
 _RUN_SPEED = 10
 _RUN_BACKWARDS_SPEED = 8

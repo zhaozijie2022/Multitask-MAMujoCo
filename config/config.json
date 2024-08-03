@@ -42,6 +42,20 @@
     ],
     "2_humanoid_standup": [
       "standup"
+    ],
+    "2_reacher": [
+      "reach"
+    ],
+    "2_swimmer": [
+      "swim",
+      "swim_backwards"
+    ],
+    "2_walker2d": [
+      "stand",
+      "walk",
+      "walk_backwards",
+      "run",
+      "run_backwards"
     ]
   }
 }

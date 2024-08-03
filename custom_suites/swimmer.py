@@ -1,20 +1,16 @@
-import numpy as np
-
 from multiagent_mujoco.mujoco_multi import MujocoMulti
-from utils import tolerance
+from custom_suites.utils import tolerance
+_SWIM_SPEED = 10
+_SWIM_BACKWARDS_SPEED = 8
 
 
 class SwimmerMulti(MujocoMulti):
     def __init__(self, env_args, **kwargs):
         super().__init__(env_args=env_args, **kwargs)
+        self.swim_speed = kwargs.get("swim_speed", _SWIM_SPEED)
+        self.swim_backwards_speed = kwargs.get("swim_backwards_speed", _SWIM_BACKWARDS_SPEED)
 
-        geom_names = self.wrapped_env.env.env.model.geom_names
-        self.geom_idxes = {name: idx for idx, name in enumerate(geom_names)}
-
-        self.radii = (self.wrapped_env.env.env.model.geom_size[self.geom_idxes["target"]][0]
-                      + self.wrapped_env.env.env.model.geom_size[self.geom_idxes["fingertip"]][0])
-
-        self.tasks = ["swim"]
+        self.tasks = ["swim", "swim_backwards"]
         self.n_tasks = len(self.tasks)
         self._task_idx = 0
 
@@ -29,18 +25,27 @@ class SwimmerMulti(MujocoMulti):
     def close(self):
         self.wrapped_env.close()
 
-    def _reach_reward(self, info):
-        return tolerance(-info["reward_dist"],
-                         bounds=(0, self.radii))
+    def _swim_reward(self, info):
+        speed = info["reward_fwd"]
+        return tolerance(speed,
+                         bounds=(self.swim_speed, float('inf')),
+                         margin=self.swim_speed,
+                         value_at_margin=0,
+                         sigmoid='linear')
 
-    def get_finger2target_dist(self):
-        f_pos = self.wrapped_env.env.env.sim.data.body_xpos["fingertip"]
-        t_pos = self.wrapped_env.env.env.sim.data.body_xpos["target"]
-        return np.linalg.norm(f_pos - t_pos)
+    def _swim_backwards_reward(self, info):
+        speed = -1.0 * info["reward_fwd"]
+        return tolerance(speed,
+                         bounds=(self.swim_backwards_speed, float('inf')),
+                         margin=self.swim_backwards_speed,
+                         value_at_margin=0,
+                         sigmoid='linear')
 
     def get_reward(self, info):
-        if self.task == "reach":
-            return self._reach_reward(info)
+        if self.task == "swim":
+            return self._swim_reward(info)
+        elif self.task == "swim_backwards":
+            return self._swim_backwards_reward(info)
         else:
             raise NotImplementedError(f"task {self.task} is not implemented.")
 

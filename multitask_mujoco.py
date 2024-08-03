@@ -1,20 +1,20 @@
 import numpy as np
 from gym.spaces import Box
 from omegaconf import DictConfig
-from utils import make_envs, get_action_shape_n
+from custom_suites import ENV_REGISTRY, ARGS_REGISTRY
 
 
 class MultitaskMujoco:
     def __init__(self, cfg: DictConfig):
         self.cfg = cfg
-        self.envs = make_envs(cfg)
+        self.envs = self.make_envs(cfg)
         self.n_tasks = sum([len(tasks) for tasks in cfg.envs.values()])
         self.envs_info = [env.get_env_info() for env in self.envs]
 
         self.obs_size = max([env_info["obs_shape"] for env_info in self.envs_info])
         self.share_obs_size = max([env_info["state_shape"] for env_info in self.envs_info])
         self.action_shape = max([env_info["n_actions"] for env_info in self.envs_info])
-        self.mt_action_shape_n = get_action_shape_n(self.envs_info)
+        self.mt_action_shape_n = self.get_action_shape_n()
 
         self.agent_nums = [env_info["n_agents"] for env_info in self.envs_info]
 
@@ -73,6 +73,23 @@ class MultitaskMujoco:
     def close(self):
         for env in self.envs:
             env.close()
+
+    def make_envs(self, cfg):
+        envs = []
+        for domain, tasks in cfg.envs.items():
+            env_args = ARGS_REGISTRY[domain]
+            env_args["episode_limit"] = cfg["episode_limit"]
+            env = ENV_REGISTRY[domain](env_args=env_args)
+            envs.append(env)
+        return envs
+
+    def get_action_shape_n(self):
+        mt_action_shape_n = []
+        for env_info in self.envs_info:
+            mt_action_shape_n.append([])
+            for action_space in env_info["action_spaces"]:
+                mt_action_shape_n[-1].append(action_space.shape[0])
+        return mt_action_shape_n
 
     @property
     def task(self):

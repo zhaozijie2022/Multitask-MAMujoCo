@@ -1,6 +1,6 @@
 # import numpy as np
 from multiagent_mujoco.mujoco_multi import MujocoMulti
-from utils import tolerance
+from custom_suites.utils import tolerance
 
 _STANDUP_HEIGHT = 1.5
 

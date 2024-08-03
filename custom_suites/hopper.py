@@ -1,7 +1,7 @@
 import numpy as np
 
 from multiagent_mujoco.mujoco_multi import MujocoMulti
-from utils import tolerance
+from custom_suites.utils import tolerance
 
 _STAND_HEIGHT = 0.7
 _HOP_SPEED = 3.0
