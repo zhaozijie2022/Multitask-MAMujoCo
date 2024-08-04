@@ -1,8 +1,5 @@
 {
-  "n_tasks": null,
-  "n_agents": null,
   "episode_limit": 1000,
-  "env_args_path": "config/all_env_args.yaml",
   "envs": {
     "2_ant": [
       "run",

@@ -1,7 +1,4 @@
-import importlib
 import warnings
-import yaml
-
 import numpy as np
 
 # The value returned by tolerance() at `margin` distance from `bounds` interval.

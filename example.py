@@ -5,7 +5,7 @@ import numpy as np
 
 def main():
     env_cfg = OmegaConf.create(json.load(open("config/config.json", "r")))
-    from multitask_mujoco import MultitaskMujoco
+    from multitask import MultitaskMujoco
 
     env = MultitaskMujoco(env_cfg)
     for i, mini_env in enumerate(env.envs):
