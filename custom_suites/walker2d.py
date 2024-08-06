@@ -31,7 +31,6 @@ class Walker2dMulti(MujocoMulti):
         raw_reward, done, info = super().step(actions)
         env_actions = np.concatenate(actions)
         info["reward_move"] = raw_reward - 1.0 + 1e-3 * np.square(env_actions).sum()
-        info["control"] = env_actions
         reward = self.get_reward(info)
         return reward, done, info
 

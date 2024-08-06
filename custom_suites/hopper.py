@@ -62,7 +62,7 @@ class HopperMulti(MujocoMulti):
         small_control = tolerance(info["control"],
                                   margin=1,
                                   value_at_margin=0,
-                                  sigmoid='quadratic')
+                                  sigmoid='quadratic').mean()
         small_control = (small_control + 4) / 5
         return standing * small_control
 

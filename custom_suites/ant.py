@@ -39,7 +39,7 @@ class AntMulti(MujocoMulti):
         control_reward = tolerance(info["control"],
                                    margin=1,
                                    value_at_margin=0,
-                                   sigmoid='quadratic')
+                                   sigmoid='quadratic').mean()
         return (2 * control_reward + 3 * speed_reward) / 5
 
 
@@ -52,7 +52,7 @@ class AntMulti(MujocoMulti):
         control_reward = tolerance(info["control"],
                                    margin=1,
                                    value_at_margin=0,
-                                   sigmoid='quadratic')
+                                   sigmoid='quadratic').mean()
         return (2 * control_reward + 3 * speed_reward) / 5
 
 
